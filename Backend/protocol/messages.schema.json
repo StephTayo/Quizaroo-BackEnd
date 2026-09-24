@@ -19,6 +19,162 @@
         "clientSentAt":  { "type": "integer" }
       },
       "additionalProperties": false
+    },
+    "Join": {
+      "type": "object",
+      "required": ["pin", "nickname"],
+      "properties": {
+        "pin":            { "type": "string", "pattern": "^[0-9]{6}$" },
+        "nickname":       { "type": "string", "minLength": 1, "maxLength": 20 },
+        "avatarId":       { "type": "string" },
+        "reconnectToken": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "ClockSync": {
+      "type": "object",
+      "required": ["clientSentAt"],
+      "properties": {
+        "clientSentAt": { "type": "integer" }
+      },
+      "additionalProperties": false
+    },
+    "HostAction": {
+      "type": "object",
+      "required": ["action"],
+      "properties": {
+        "action":         { "enum": ["START", "NEXT", "SKIP", "LOCK", "KICK"] },
+        "targetPlayerId": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "Joined": {
+      "type": "object",
+      "required": ["playerId", "reconnectToken", "roomState", "playerCount"],
+      "properties": {
+        "playerId":       { "type": "string" },
+        "reconnectToken": { "type": "string" },
+        "roomState":      { "$ref": "#/$defs/RoomPhase" },
+        "playerCount":    { "type": "integer", "minimum": 0 },
+        "quizTitle":      { "type": "string" },
+        "spectator":      { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "ClockSyncAck": {
+      "type": "object",
+      "required": ["clientSentAt", "serverTime"],
+      "properties": {
+        "clientSentAt": { "type": "integer" },
+        "serverTime":   { "type": "integer" }
+      },
+      "additionalProperties": false
+    },
+    "Question": {
+      "type": "object",
+      "required": ["questionIndex", "totalQuestions", "text", "choices", "timeLimitMs", "startedAt"],
+      "properties": {
+        "questionIndex":  { "type": "integer", "minimum": 0 },
+        "totalQuestions": { "type": "integer", "minimum": 1 },
+        "text":           { "type": "string" },
+        "imageUrl":       { "type": "string" },
+        "choices": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "required": ["index", "text"],
+            "properties": {
+              "index": { "type": "integer", "minimum": 0 },
+              "text":  { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "timeLimitMs": { "type": "integer", "minimum": 1000 },
+        "startedAt":   { "type": "integer" }
+      },
+      "additionalProperties": false
+    },
+    "AnswerAck": {
+      "type": "object",
+      "required": ["questionIndex", "accepted"],
+      "properties": {
+        "questionIndex": { "type": "integer", "minimum": 0 },
+        "accepted":      { "type": "boolean" },
+        "reason":        { "enum": ["OK", "ALREADY_ANSWERED", "TOO_LATE", "NOT_ACTIVE"] }
+      },
+      "additionalProperties": false
+    },
+    "Reveal": {
+      "type": "object",
+      "required": ["questionIndex", "correctIndex", "distribution"],
+      "properties": {
+        "questionIndex": { "type": "integer", "minimum": 0 },
+        "correctIndex":  { "type": "integer", "minimum": 0 },
+        "distribution": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 0 }
+        },
+        "yourChoiceIndex": { "type": "integer" },
+        "yourCorrect":     { "type": "boolean" },
+        "pointsAwarded":   { "type": "integer", "minimum": 0 },
+        "streak":          { "type": "integer", "minimum": 0 },
+        "totalScore":      { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "Scoreboard": {
+      "type": "object",
+      "required": ["top", "yourRank", "yourScore"],
+      "properties": {
+        "top": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "required": ["rank", "playerId", "nickname", "score"],
+            "properties": {
+              "rank":      { "type": "integer", "minimum": 1 },
+              "playerId":  { "type": "string" },
+              "nickname":  { "type": "string" },
+              "score":     { "type": "integer", "minimum": 0 },
+              "avatarId":  { "type": "string" },
+              "streak":    { "type": "integer", "minimum": 0 },
+              "rankDelta": { "type": "integer" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "yourRank":  { "type": "integer", "minimum": 1 },
+        "yourScore": { "type": "integer", "minimum": 0 },
+        "rankDelta": { "type": "integer" }
+      },
+      "additionalProperties": false
+    },
+    "PlayerPresence": {
+      "type": "object",
+      "required": ["playerId", "nickname", "playerCount"],
+      "properties": {
+        "playerId":    { "type": "string" },
+        "nickname":    { "type": "string" },
+        "avatarId":    { "type": "string" },
+        "playerCount": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "Error": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code":    { "type": "integer" },
+        "message": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "RoomPhase": {
+      "enum": ["LOBBY", "QUESTION_INTRO", "QUESTION_ACTIVE", "LOCKED", "REVEAL", "SCOREBOARD", "PODIUM", "ENDED"]
     }
   }
 }
