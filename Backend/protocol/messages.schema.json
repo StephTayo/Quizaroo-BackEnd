@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Envelope": {
+      "type": "object",
+      "required": ["t", "seq", "d"],
+      "properties": {
+        "t":   { "type": "string" },
+        "seq": { "type": "integer", "minimum": 0 },
+        "d":   { "type": "object" }
+      }
+    },
+    "Answer": {
+      "type": "object",
+      "required": ["questionIndex", "choiceIndex", "clientSentAt"],
+      "properties": {
+        "questionIndex": { "type": "integer", "minimum": 0 },
+        "choiceIndex":   { "type": "integer", "minimum": 0, "maximum": 5 },
+        "clientSentAt":  { "type": "integer" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
